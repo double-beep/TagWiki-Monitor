@@ -32,6 +32,8 @@ public class RunMonitor {
             e.printStackTrace();
         }
 
+        System.out.println("STARTED - "+Instant.now());
+
         client = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));
         Room room = client.joinRoom(ChatHost.STACK_OVERFLOW ,111347);
 
