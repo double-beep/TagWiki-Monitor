@@ -33,7 +33,7 @@ public class ApiService {
         this.site = site;
         this.apiKey = prop.getProperty("apikey");
 
-        if(apiKey.equals(null)){
+        if(apiKey == null){
             apiKey = System.getenv("apikey");
         }
 

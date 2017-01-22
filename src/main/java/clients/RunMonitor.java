@@ -38,7 +38,7 @@ public class RunMonitor {
         String email = prop.getProperty("email");
         String password = prop.getProperty("password");
 
-        if (email.equals(null) || password.equals(null)){
+        if (email == null || password == null){
             // For heroku only
             email = System.getenv("email");
             password = System.getenv("password");
