@@ -7,6 +7,7 @@
     <groupId>in.bhargavrao</groupId>
     <artifactId>tagwikieditmonitor</artifactId>
     <version>1.0</version>
+
     <dependencies>
         <dependency>
             <groupId>javax.json</groupId>
@@ -62,6 +63,26 @@
                                 </transformer>
                             </transformers>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <configuration>
+                    <assembleDirectory>target</assembleDirectory>
+                    <programs>
+                        <program>
+                            <mainClass>client/RunMonitor</mainClass>
+                            <name>monitor</name>
+                        </program>
+                    </programs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase><goals><goal>assemble</goal></goals>
                     </execution>
                 </executions>
             </plugin>

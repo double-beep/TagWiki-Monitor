@@ -1,1 +1,1 @@
-worker: sh target/tagwikieditmonitor-1.0.jar
+worker: sh target/bin/monitor
