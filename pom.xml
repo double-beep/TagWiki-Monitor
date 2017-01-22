@@ -75,7 +75,7 @@
                     <assembleDirectory>target</assembleDirectory>
                     <programs>
                         <program>
-                            <mainClass>client/RunMonitor</mainClass>
+                            <mainClass>in.bhargavrao.stackoverflow.tagwikieditmonitor.clients.runMonitor</mainClass>
                             <name>monitor</name>
                         </program>
                     </programs>
