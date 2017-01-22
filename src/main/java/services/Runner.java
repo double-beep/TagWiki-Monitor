@@ -67,7 +67,7 @@ public class Runner {
 
                 previousEditId = endId;
                 if (!printString.equals(""))
-                    room.send("[ [TagWiki Edit Monitor](https://git.io/vMQbz) ] Tag wiki links " + printString);
+                    room.send("[ [TagWiki Edit Monitor](https://git.io/vMQjF) ] Tag wiki links " + printString);
             }
         }
         catch (Exception e){
