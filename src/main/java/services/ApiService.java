@@ -16,8 +16,6 @@ import java.util.Properties;
 public class ApiService {
 
     private String apiKey;
-    private String autoflagKey;
-    private String autoflagToken;
     private String site;
 
     private static int quota=0;
@@ -34,8 +32,10 @@ public class ApiService {
 
         this.site = site;
         this.apiKey = prop.getProperty("apikey");
-        this.autoflagKey = prop.getProperty("autoflagkey");
-        this.autoflagToken = prop.getProperty("autoflagtoken");
+
+        if(apiKey.equals(null)){
+            apiKey = System.getenv("apikey");
+        }
 
     }
 

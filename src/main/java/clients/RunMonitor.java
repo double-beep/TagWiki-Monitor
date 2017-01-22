@@ -34,7 +34,17 @@ public class RunMonitor {
 
         System.out.println("STARTED - "+Instant.now());
 
-        client = new StackExchangeClient(prop.getProperty("email"), prop.getProperty("password"));
+
+        String email = prop.getProperty("email");
+        String password = prop.getProperty("password");
+
+        if (email.equals(null) || password.equals(null)){
+            // For heroku only
+            email = System.getenv("email");
+            password = System.getenv("password");
+        }
+
+        client = new StackExchangeClient(email, password);
         Room room = client.joinRoom(ChatHost.STACK_OVERFLOW ,111347);
 
         room.send("Hiya o/ (Tag wiki monitor - random edition)");
