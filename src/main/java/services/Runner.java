@@ -1,6 +1,14 @@
 package services;
 
+import fr.tunaki.stackoverflow.chat.ChatHost;
+import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
+import fr.tunaki.stackoverflow.chat.StackExchangeClient;
+import fr.tunaki.stackoverflow.chat.event.EventType;
+import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
+import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
+import sun.rmi.runtime.Log;
+import utils.LoginUtils;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -26,8 +34,31 @@ public class Runner {
 
     public void startMonitor(){
         EditSuggestions suggest = new EditSuggestions();
+        room.addEventListener(EventType.MESSAGE_REPLY, event->reply(room, event, true));
+        room.addEventListener(EventType.USER_MENTIONED,event->mention(room, event, false));
         Runnable runner = () -> runEditBotOnce(room, suggest);
         executorService.scheduleAtFixedRate(runner, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private void mention(Room room, UserMentionedEvent event, boolean b) {
+        String message = event.getMessage().getPlainContent();
+        if(message.toLowerCase().contains("help")){
+            room.send("I'm a bot that tracks tag wiki edits");
+        }
+        else if(message.toLowerCase().contains("alive")){
+            room.send("Yep");
+        }
+    }
+
+    private void reply(Room room, MessageReplyEvent event, boolean b) {
+        String message = event.getMessage().getPlainContent();
+        if(message.toLowerCase().contains("socvr") &&  room.getUser(event.getUserId()).isRoomOwner()){
+            Message report =  room.getMessage(event.getParentMessageId());
+            StackExchangeClient client = LoginUtils.getClient();
+            Room targetRoom = client.joinRoom(ChatHost.STACK_OVERFLOW, 41570);
+            targetRoom.send(report.getPlainContent()+" (*verified by [@"+event.getUserName().replace(" ","")+"](//chat.stackoverflow.com/transcript/message/"+event.getMessage().getId()+")*)");
+            targetRoom.leave();
+        }
     }
 
     public void restartMonitor(){

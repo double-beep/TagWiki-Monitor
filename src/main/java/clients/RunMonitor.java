@@ -4,8 +4,10 @@ import fr.tunaki.stackoverflow.chat.ChatHost;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.Room;
 
+import fr.tunaki.stackoverflow.chat.event.EventType;
 import services.Runner;
 import utils.FilePathUtils;
+import utils.LoginUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,30 +23,11 @@ public class RunMonitor {
 
     public static void main(String[] args) {
 
-        StackExchangeClient client;
-
-        Properties prop = new Properties();
-
-        try{
-            prop.load(new FileInputStream(FilePathUtils.loginPropertiesFile));
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
 
         System.out.println("STARTED - "+Instant.now());
 
+        StackExchangeClient client = LoginUtils.getClient();
 
-        String email = prop.getProperty("email");
-        String password = prop.getProperty("password");
-
-        if (email == null || password == null){
-            // For heroku only
-            email = System.getenv("email");
-            password = System.getenv("password");
-        }
-
-        client = new StackExchangeClient(email, password);
         Room room = client.joinRoom(ChatHost.STACK_OVERFLOW ,111347);
 
         room.send("Hiya o/ (Tag wiki monitor - random edition)");
