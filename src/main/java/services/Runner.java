@@ -105,7 +105,7 @@ public class Runner {
 
                 previousEditId = endId;
                 for (Integer id: ids) {
-                    room.send("[ [TagWiki Edit Monitor](https://git.io/vMQjF) ] Tag wiki link " + id);
+                    room.send("[ [TagWiki Edit Monitor](https://git.io/vMQjF) ] Tag wiki link [" + id + "](//stackoverflow.com/suggested-edits/" + id + ")");
                     Thread.sleep(1000);
                 }
             }
