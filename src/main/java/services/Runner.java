@@ -10,6 +10,7 @@ import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 import sun.rmi.runtime.Log;
 import utils.LoginUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,10 +55,13 @@ public class Runner {
         String message = event.getMessage().getPlainContent();
         if(message.toLowerCase().contains("socvr") &&  room.getUser(event.getUserId()).isRoomOwner()){
             Message report =  room.getMessage(event.getParentMessageId());
-            StackExchangeClient client = LoginUtils.getClient();
-            Room targetRoom = client.joinRoom(ChatHost.STACK_OVERFLOW, 41570);
-            targetRoom.send(report.getPlainContent()+" (*verified by [@"+event.getUserName().replace(" ","")+"](//chat.stackoverflow.com/transcript/message/"+event.getMessage().getId()+")*)");
-            targetRoom.leave();
+            if (report.getPlainContent().contains("Tag wiki links")) {
+                StackExchangeClient client = LoginUtils.getClient();
+                Room targetRoom = client.joinRoom(ChatHost.STACK_OVERFLOW, 41570);
+                String reason = message.split("socvr")[1].trim();
+                targetRoom.send(report.getPlainContent() + " [tag:reject-pls] " + reason + "  (*verified by [@" + event.getUserName().replace(" ", "") + "](//chat.stackoverflow.com/transcript/message/" + event.getMessage().getId() + ")*)");
+                targetRoom.leave();
+            }
         }
     }
 
@@ -75,12 +79,15 @@ public class Runner {
             List<Integer> editIds = suggestions.getEditIds();
             System.out.println(editIds);
             if(editIds.size()>0) {
+
+                List<Integer> ids = new ArrayList<>();
+
                 if (firstTime) {
                     previousEditId = editIds.get(0) - 1;
                     firstTime = false;
                 }
                 Integer endId = editIds.get(editIds.size() - 1);
-                String printString = "";
+
 
                 if (endId - previousEditId != editIds.size()) {
                     System.out.println("Tag wikis detected");
@@ -88,7 +95,7 @@ public class Runner {
                     for (Integer editId : editIds) {
                         if (i != editId) {
                             while(i!=editId){
-                                printString += "[" + i + "](//stackoverflow.com/suggested-edits/" + i + "); ";
+                                ids.add(i);
                                 i++;
                             }
                         }
@@ -97,8 +104,10 @@ public class Runner {
                 }
 
                 previousEditId = endId;
-                if (!printString.equals(""))
-                    room.send("[ [TagWiki Edit Monitor](https://git.io/vMQjF) ] Tag wiki links " + printString);
+                for (Integer id: ids) {
+                    room.send("[ [TagWiki Edit Monitor](https://git.io/vMQjF) ] Tag wiki link " + id);
+                    Thread.sleep(1000);
+                }
             }
         }
         catch (Exception e){
