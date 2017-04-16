@@ -55,7 +55,7 @@ public class Runner {
         String message = event.getMessage().getPlainContent();
         if(message.toLowerCase().contains("socvr") &&  room.getUser(event.getUserId()).isRoomOwner()){
             Message report =  room.getMessage(event.getParentMessageId());
-            if (report.getPlainContent().contains("Tag wiki links")) {
+            if (report.getPlainContent().contains("Tag wiki link")) {
                 StackExchangeClient client = LoginUtils.getClient();
                 Room targetRoom = client.joinRoom(ChatHost.STACK_OVERFLOW, 41570);
                 String reason = message.split("socvr")[1].trim();
