@@ -5,6 +5,7 @@ import fr.tunaki.stackoverflow.chat.Message;
 import fr.tunaki.stackoverflow.chat.Room;
 import fr.tunaki.stackoverflow.chat.StackExchangeClient;
 import fr.tunaki.stackoverflow.chat.event.EventType;
+import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 import sun.rmi.runtime.Log;
@@ -12,6 +13,7 @@ import utils.LoginUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +39,21 @@ public class Runner {
         EditSuggestions suggest = new EditSuggestions();
         room.addEventListener(EventType.MESSAGE_REPLY, event->reply(room, event, true));
         room.addEventListener(EventType.USER_MENTIONED,event->mention(room, event, false));
+        room.addEventListener(EventType.MESSAGE_POSTED ,event-> newMessage(room, event, false));
+
         Runnable runner = () -> runEditBotOnce(room, suggest);
         executorService.scheduleAtFixedRate(runner, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private static void newMessage(Room room, MessagePostedEvent event, boolean b) {
+        String message = event.getMessage().getPlainContent();
+        int cp = Character.codePointAt(message, 0);
+        if(message.trim().startsWith("@bots alive")){
+            room.send("Not feeling well, but still alive");
+        }
+        else if (cp == 128642 || (cp>=128644 && cp<=128650)){
+            room.send("\uD83D\uDE83");
+        }
     }
 
     private void mention(Room room, UserMentionedEvent event, boolean b) {
