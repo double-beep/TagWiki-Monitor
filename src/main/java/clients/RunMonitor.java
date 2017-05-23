@@ -23,7 +23,6 @@ public class RunMonitor {
 
     public static void main(String[] args) {
 
-
         System.out.println("STARTED - "+Instant.now());
 
         StackExchangeClient client = LoginUtils.getClient();
@@ -33,6 +32,8 @@ public class RunMonitor {
         room.send("Hiya o/ (Tag wiki monitor - random edition)");
 
         Runner runner = new Runner(room);
+
+
         runner.startMonitor();
 
         System.out.println("LOADED  - "+Instant.now());

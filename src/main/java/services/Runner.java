@@ -8,6 +8,7 @@ import fr.tunaki.stackoverflow.chat.event.EventType;
 import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
+import org.sobotics.PingService;
 import sun.rmi.runtime.Log;
 import utils.LoginUtils;
 
@@ -33,15 +34,23 @@ public class Runner {
         firstTime = true;
         this.room = room;
         executorService = Executors.newSingleThreadScheduledExecutor();
+
     }
 
     public void startMonitor(){
+
+
+
         EditSuggestions suggest = new EditSuggestions();
         room.addEventListener(EventType.MESSAGE_REPLY, event->reply(room, event, true));
         room.addEventListener(EventType.USER_MENTIONED,event->mention(room, event, false));
         room.addEventListener(EventType.MESSAGE_POSTED ,event-> newMessage(room, event, false));
 
-        Runnable runner = () -> runEditBotOnce(room, suggest);
+        String redundaKey = new PropertyService().getRedundaKey();
+        PingService redunda = new PingService(redundaKey, "random");
+        redunda.start();
+
+        Runnable runner = () -> runEditBotOnce(room, suggest, redunda);
         executorService.scheduleAtFixedRate(runner, 0, 1, TimeUnit.MINUTES);
     }
 
@@ -89,45 +98,45 @@ public class Runner {
         executorService.shutdown();
     }
 
-    public void runEditBotOnce(Room room, EditSuggestions suggestions){
-        try{
-            List<Integer> editIds = suggestions.getEditIds();
-            System.out.println(editIds);
-            if(editIds.size()>0) {
+    public void runEditBotOnce(Room room, EditSuggestions suggestions, PingService redunda){
 
-                List<Integer> ids = new ArrayList<>();
+        if (!redunda.standby.get()) {
+            try {
+                List<Integer> editIds = suggestions.getEditIds();
+                System.out.println(editIds);
+                if (editIds.size() > 0) {
 
-                if (firstTime) {
-                    previousEditId = editIds.get(0) - 1;
-                    firstTime = false;
-                }
-                Integer endId = editIds.get(editIds.size() - 1);
+                    List<Integer> ids = new ArrayList<>();
 
+                    if (firstTime) {
+                        previousEditId = editIds.get(0) - 1;
+                        firstTime = false;
+                    }
+                    Integer endId = editIds.get(editIds.size() - 1);
 
-                if (endId - previousEditId != editIds.size()) {
-                    System.out.println("Tag wikis detected");
-                    int i = previousEditId + 1;
-                    for (Integer editId : editIds) {
-                        if (i != editId) {
-                            while(i!=editId){
-                                ids.add(i);
-                                i++;
+                    if (endId - previousEditId != editIds.size()) {
+                        System.out.println("Tag wikis detected");
+                        int i = previousEditId + 1;
+                        for (Integer editId : editIds) {
+                            if (i != editId) {
+                                while (i != editId) {
+                                    ids.add(i);
+                                    i++;
+                                }
                             }
+                            i++;
                         }
-                        i++;
+                    }
+
+                    previousEditId = endId;
+                    for (Integer id : ids) {
+                        room.send("[ [TagWiki Edit Monitor](https://git.io/vMQjF) ] Tag wiki link [" + id + "](//stackoverflow.com/suggested-edits/" + id + ")");
+                        Thread.sleep(1000);
                     }
                 }
-
-                previousEditId = endId;
-                for (Integer id: ids) {
-                    room.send("[ [TagWiki Edit Monitor](https://git.io/vMQjF) ] Tag wiki link [" + id + "](//stackoverflow.com/suggested-edits/" + id + ")");
-                    Thread.sleep(1000);
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
     }
 }
