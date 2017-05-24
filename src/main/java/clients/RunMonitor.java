@@ -33,7 +33,6 @@ public class RunMonitor {
 
         Runner runner = new Runner(room);
 
-
         runner.startMonitor();
 
         System.out.println("LOADED  - "+Instant.now());
