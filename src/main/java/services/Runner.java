@@ -70,7 +70,7 @@ public class Runner {
             room.send("I'm a bot that tracks tag wiki edits");
         }
         else if(!redunda.standby.get() && message.toLowerCase().contains("alive")){
-            room.send(new PropertyService().getLocation() + "reporting for duty.");
+            room.send(new PropertyService().getLocation() + " reporting for duty.");
         }
         else if(message.toLowerCase().contains("status")){
             room.send(new PropertyService().getLocation() + " running with status - " + (previousState ?"running":"standby"));
