@@ -9,12 +9,10 @@ import fr.tunaki.stackoverflow.chat.event.MessagePostedEvent;
 import fr.tunaki.stackoverflow.chat.event.MessageReplyEvent;
 import fr.tunaki.stackoverflow.chat.event.UserMentionedEvent;
 import org.sobotics.PingService;
-import sun.rmi.runtime.Log;
 import utils.LoginUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,57 +25,62 @@ public class Runner {
 
     private Boolean firstTime;
     private Integer previousEditId ;
+    private Boolean previousState;
     private Room room;
     private ScheduledExecutorService executorService;
 
     public Runner(Room room){
         firstTime = true;
+        previousState = false;
         this.room = room;
         executorService = Executors.newSingleThreadScheduledExecutor();
-
     }
 
     public void startMonitor(){
 
 
-
-        EditSuggestions suggest = new EditSuggestions();
-        room.addEventListener(EventType.MESSAGE_REPLY, event->reply(room, event, true));
-        room.addEventListener(EventType.USER_MENTIONED,event->mention(room, event, false));
-        room.addEventListener(EventType.MESSAGE_POSTED ,event-> newMessage(room, event, false));
-
         String redundaKey = new PropertyService().getRedundaKey();
         PingService redunda = new PingService(redundaKey, "random");
         redunda.start();
+
+        EditSuggestions suggest = new EditSuggestions();
+        room.addEventListener(EventType.MESSAGE_REPLY, event->reply(room, event, redunda, true));
+        room.addEventListener(EventType.USER_MENTIONED,event->mention(room, event, redunda, false));
+        room.addEventListener(EventType.MESSAGE_POSTED ,event-> newMessage(room, event, redunda, false));
+
 
         Runnable runner = () -> runEditBotOnce(room, suggest, redunda);
         executorService.scheduleAtFixedRate(runner, 0, 1, TimeUnit.MINUTES);
     }
 
-    private static void newMessage(Room room, MessagePostedEvent event, boolean b) {
+    private static void newMessage(Room room, MessagePostedEvent event, PingService redunda, boolean b) {
         String message = event.getMessage().getPlainContent();
         int cp = Character.codePointAt(message, 0);
-        if(message.trim().startsWith("@bots alive")){
+        if(!redunda.standby.get() &&message.trim().startsWith("@bots alive")){
             room.send("Not feeling well, but still alive");
         }
-        else if (cp == 128642 || (cp>=128644 && cp<=128650)){
+        else if (!redunda.standby.get() && (cp == 128642 || (cp>=128644 && cp<=128650))){
             room.send("\uD83D\uDE83");
         }
     }
 
-    private void mention(Room room, UserMentionedEvent event, boolean b) {
+    private void mention(Room room, UserMentionedEvent event, PingService redunda, boolean b) {
         String message = event.getMessage().getPlainContent();
-        if(message.toLowerCase().contains("help")){
+        if(!redunda.standby.get() && message.toLowerCase().contains("help")){
             room.send("I'm a bot that tracks tag wiki edits");
         }
-        else if(message.toLowerCase().contains("alive")){
-            room.send("Yep");
+        else if(!redunda.standby.get() && message.toLowerCase().contains("alive")){
+            room.send(new PropertyService().getLocation() + "reporting for duty.");
         }
+        else if(message.toLowerCase().contains("status")){
+            room.send(new PropertyService().getLocation() + " running with status - " + (previousState ?"running":"standby"));
+        }
+
     }
 
-    private void reply(Room room, MessageReplyEvent event, boolean b) {
+    private void reply(Room room, MessageReplyEvent event, PingService redunda, boolean b) {
         String message = event.getMessage().getPlainContent();
-        if(message.toLowerCase().contains("socvr") &&  room.getUser(event.getUserId()).isRoomOwner()){
+        if(!redunda.standby.get() && message.toLowerCase().contains("socvr") &&  room.getUser(event.getUserId()).isRoomOwner()){
             Message report =  room.getMessage(event.getParentMessageId());
             if (report.getPlainContent().contains("Tag wiki link")) {
                 StackExchangeClient client = LoginUtils.getClient();
@@ -100,7 +103,18 @@ public class Runner {
 
     public void runEditBotOnce(Room room, EditSuggestions suggestions, PingService redunda){
 
-        if (!redunda.standby.get()) {
+        boolean presentState = !redunda.standby.get();
+
+        if(!previousState && presentState && !firstTime) {
+            room.send("Received failover - " + new PropertyService().getLocation() + " switching to running");
+            firstTime = true;
+        }
+        if(previousState && !presentState && !firstTime) {
+            room.send("Received stop - " + new PropertyService().getLocation() + " switching to standby");
+            firstTime = true;
+        }
+
+        if (presentState) {
             try {
                 List<Integer> editIds = suggestions.getEditIds();
                 System.out.println(editIds);
@@ -138,5 +152,6 @@ public class Runner {
                 e.printStackTrace();
             }
         }
+        previousState = presentState;
     }
 }

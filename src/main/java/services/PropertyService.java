@@ -49,4 +49,11 @@ public class PropertyService {
         return redundaKey;
     }
 
+    public String getLocation(){
+        String location = prop.getProperty("location");
+        if (location == null)
+            location = System.getenv("location");
+        return location;
+    }
+
 }
