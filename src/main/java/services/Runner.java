@@ -54,7 +54,7 @@ public class Runner {
     }
 
     private static void newMessage(Room room, MessagePostedEvent event, PingService redunda, boolean b) {
-        String message = event.getMessage().getPlainContent();
+        String message = event.getMessage().getContent();
         int cp = Character.codePointAt(message, 0);
         if(!redunda.standby.get() &&message.trim().startsWith("@bots alive")){
             room.send("Not feeling well, but still alive");
@@ -65,7 +65,7 @@ public class Runner {
     }
 
     private void mention(Room room, UserMentionedEvent event, PingService redunda, boolean b) {
-        String message = event.getMessage().getPlainContent();
+        String message = event.getMessage().getContent();
         if(!redunda.standby.get() && message.toLowerCase().contains("help")){
             room.send("I'm a bot that tracks tag wiki edits");
         }
@@ -79,14 +79,14 @@ public class Runner {
     }
 
     private void reply(Room room, MessageReplyEvent event, PingService redunda, boolean b) {
-        String message = event.getMessage().getPlainContent();
+        String message = event.getMessage().getContent();
         if(!redunda.standby.get() && message.toLowerCase().contains("socvr") &&  room.getUser(event.getUserId()).isRoomOwner()){
             Message report =  room.getMessage(event.getParentMessageId());
-            if (report.getPlainContent().contains("Tag wiki link")) {
+            if (report.getContent().contains("Tag wiki link")) {
                 StackExchangeClient client = LoginUtils.getClient();
                 Room targetRoom = client.joinRoom(ChatHost.STACK_OVERFLOW, 41570);
                 String reason = message.split("socvr")[1].trim();
-                targetRoom.send(report.getPlainContent() + " [tag:reject-pls] " + reason + "  (*verified by [@" + event.getUserName().replace(" ", "") + "](//chat.stackoverflow.com/transcript/message/" + event.getMessage().getId() + ")*)");
+                targetRoom.send(report.getContent() + " [tag:reject-pls] " + reason + "  (*verified by [@" + event.getUserName().replace(" ", "") + "](//chat.stackoverflow.com/transcript/message/" + event.getMessage().getId() + ")*)");
                 targetRoom.leave();
             }
         }
