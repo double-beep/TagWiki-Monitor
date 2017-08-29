@@ -129,10 +129,16 @@ public class Runner {
                     Integer endId = editIds.get(editIds.size() - 1);
 
                     if (endId - previousEditId != editIds.size()) {
+
                         System.out.println("Tag wikis detected");
                         int i = previousEditId + 1;
+
                         for (Integer editId : editIds) {
                             if (i != editId) {
+                                if (editId - i > 10){
+                                    room.send("Some issue with the system, @BhargavRao, I'm refreshing the queue now. "+(editId-i));
+                                    i = editId-1;
+                                }
                                 while (i != editId) {
                                     ids.add(i);
                                     i++;
