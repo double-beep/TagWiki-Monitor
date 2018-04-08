@@ -60,7 +60,7 @@ public class Runner {
             room.send("Not feeling well, but still alive");
         }
         else if (!redunda.standby.get() && (cp == 128642 || (cp>=128644 && cp<=128650))){
-            room.send("\uD83D\uDE83");
+            room.send("[\uD83D\uDE83](https://www.youtube.com/watch?v=Sagg08DrO5U)");
         }
     }
 
