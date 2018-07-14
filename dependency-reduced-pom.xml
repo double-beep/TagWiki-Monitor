@@ -57,14 +57,5 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <id>Tunaki-mvn-repo</id>
-      <url>https://raw.github.com/Tunaki/chatexchange/mvn-repo/</url>
-    </repository>
-  </repositories>
 </project>
 

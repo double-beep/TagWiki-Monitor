@@ -1,20 +1,12 @@
 package clients;
 
-import fr.tunaki.stackoverflow.chat.ChatHost;
-import fr.tunaki.stackoverflow.chat.StackExchangeClient;
-import fr.tunaki.stackoverflow.chat.Room;
-
-import fr.tunaki.stackoverflow.chat.event.EventType;
+import org.sobotics.chatexchange.chat.ChatHost;
+import org.sobotics.chatexchange.chat.Room;
+import org.sobotics.chatexchange.chat.StackExchangeClient;
 import services.Runner;
-import utils.FilePathUtils;
 import utils.LoginUtils;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by bhargav.h on 22-Jan-17.

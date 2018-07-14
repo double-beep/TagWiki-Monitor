@@ -1,11 +1,7 @@
 package utils;
 
-import fr.tunaki.stackoverflow.chat.StackExchangeClient;
+import org.sobotics.chatexchange.chat.StackExchangeClient;
 import services.PropertyService;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Created by bhargav.h on 25-Mar-17.
