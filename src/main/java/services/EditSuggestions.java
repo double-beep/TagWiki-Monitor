@@ -1,12 +1,12 @@
 package services;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Created by bhargav.h on 22-Jan-17.
@@ -21,13 +21,11 @@ public class EditSuggestions {
         apiService = new ApiService("stackoverflow");
     }
 
-    public List<Integer> getEditIds(){
-        List<Integer>  editIds = new ArrayList<>();
+    public List<Integer> getEditIds() {
+        List<Integer> editIds = new ArrayList<>();
 
         try {
             JsonObject edits = apiService.getFirstPageOfSuggestedEdits(previousTimestamp);
-
-
             System.out.println(editIds);
 
             for (JsonElement element : edits.get("items").getAsJsonArray()) {
@@ -36,8 +34,7 @@ public class EditSuggestions {
             }
 
             previousTimestamp = Instant.now().plusSeconds(1);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return editIds;
