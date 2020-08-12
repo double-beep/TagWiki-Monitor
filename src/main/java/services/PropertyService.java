@@ -56,4 +56,8 @@ public class PropertyService {
         return location;
     }
 
+    public boolean getUseRedunda() {
+        boolean useRedunda = prop.getProperty("useRedunda").equals(true);
+        return useRedunda;
+    }
 }

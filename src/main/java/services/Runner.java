@@ -39,8 +39,13 @@ public class Runner {
     public void startMonitor() {
 
         String redundaKey = new PropertyService().getRedundaKey();
+        boolean useRedunda = new PropertyService().getUseRedunda();
         PingService redunda = new PingService(redundaKey, "random");
-        redunda.start();
+        if (useRedunda) {
+            redunda.start();
+        } else {
+            redunda.setDebugging(true);
+        }
 
         EditSuggestions suggest = new EditSuggestions();
         room.addEventListener(EventType.MESSAGE_REPLY, event -> reply(room, event, redunda, true));
