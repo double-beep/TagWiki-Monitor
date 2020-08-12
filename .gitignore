@@ -1,1 +1,6 @@
+/target/
+/.settings/
 /properties/
+/.classpath
+/.project
+/.idea/
