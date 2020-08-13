@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.sobotics.PingService;
 import org.sobotics.chatexchange.chat.ChatHost;
 import org.sobotics.chatexchange.chat.Message;
 import org.sobotics.chatexchange.chat.Room;
@@ -15,6 +14,7 @@ import org.sobotics.chatexchange.chat.event.EventType;
 import org.sobotics.chatexchange.chat.event.MessagePostedEvent;
 import org.sobotics.chatexchange.chat.event.MessageReplyEvent;
 import org.sobotics.chatexchange.chat.event.UserMentionedEvent;
+import org.sobotics.redunda.PingService;
 
 import utils.LoginUtils;
 
