@@ -61,6 +61,6 @@ public class PropertyService {
         if (useRedunda == null) {
             useRedunda = System.getenv("useRedunda");
         }
-        return useRedunda.equals("true");
+        return "true".equals(useRedunda);
     }
 }
