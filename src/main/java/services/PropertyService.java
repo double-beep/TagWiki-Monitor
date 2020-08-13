@@ -1,10 +1,10 @@
 package services;
 
+import utils.FilePathUtils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import utils.FilePathUtils;
 
 /**
  * Created by bhargav.h on 23-May-17.
@@ -57,7 +57,10 @@ public class PropertyService {
     }
 
     public boolean getUseRedunda() {
-        boolean useRedunda = prop.getProperty("useRedunda").equals(true);
-        return useRedunda;
+        String useRedunda = prop.getProperty("useRedunda");
+        if (useRedunda == null) {
+            useRedunda = System.getenv("useRedunda");
+        }
+        return useRedunda.equals("true");
     }
 }
