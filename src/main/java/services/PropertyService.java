@@ -1,10 +1,10 @@
 package services;
 
-import utils.FilePathUtils;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+
+import utils.FilePathUtils;
 
 /**
  * Created by bhargav.h on 23-May-17.
